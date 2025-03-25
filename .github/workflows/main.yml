@@ -11,7 +11,7 @@ jobs:
     - name: Configure RDP
       shell: powershell
       run: |
-        # تعيين كلمة مرور (Arise2233)
+        # تعيين كلمة مرور (P@ssw0rd123)
         $password = ConvertTo-SecureString "P@ssw0rd123" -AsPlainText -Force
         
         # تمكين RDP وإعداد الجدار الناري
