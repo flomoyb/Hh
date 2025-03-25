@@ -10,3 +10,5 @@ jobs:
           net localgroup administrators RDPUser /add
           netsh advfirewall firewall add rule name="RDP" protocol=TCP dir=in localport=3389 action=allow
           echo "RDP Enabled"
+- name: Get Public IP
+        run: curl ifconfig.me
