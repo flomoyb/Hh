@@ -1,23 +1,19 @@
-name: Free RDP
-on: [push]
+name: RDP Setup
+
+on: [workflow_dispatch]
 
 jobs:
   build:
     runs-on: windows-latest
     steps:
-      - name: Enable RDP
-        run: |
-          echo "Enabling RDP..."
-          net user RDPUser RDPpassword /add || echo "User creation failed, but continuing..."
-          net localgroup administrators RDPUser /add || echo "Failed to add user to administrators group, but continuing..."
-          reg add "HKLM\System\CurrentControlSet\Control\Terminal Server" /v fDenyTSConnections /t REG_DWORD /d 0 /f || echo "Failed to modify registry, but continuing..."
-          netsh advfirewall firewall set rule group="Remote Desktop" new enable=Yes || echo "Firewall rule not set, but continuing..."
-          netsh advfirewall firewall add rule name="RDP" dir=in action=allow protocol=TCP localport=3389 || echo "Failed to open port 3389, but continuing..."
-          sc config TermService start= auto || echo "Failed to configure TermService, but continuing..."
-          net start TermService || echo "Failed to start TermService, but continuing..."
-          echo "RDP setup completed."
-
-      - name: Get Public IP
-        run: |
-          $ip = (Invoke-WebRequest -Uri "http://ifconfig.me/ip" -UseBasicParsing).Content
-          echo "Public IP: $ip"
+    - name: Setup RDP
+      run: |
+        $password = "YourPasswordHere"
+        cmd.exe /c "netsh advfirewall firewall add rule name='RDP' dir=in action=allow protocol=TCP localport=3389"
+        cmd.exe /c 'reg add "HKLM\System\CurrentControlSet\Control\Terminal Server" /v fDenyTSConnections /t REG_DWORD /d 0 /f'
+        cmd.exe /c "net user runneradmin $password /add"
+        cmd.exe /c 'net localgroup "Remote Desktop Users" "runneradmin" /add'
+        cmd.exe /c 'net localgroup administrators "runneradmin" /add'
+        Write-Output "RDP IP: $(curl -s ifconfig.me)"
+        Write-Output "Username: runneradmin"
+        Write-Output "Password: $password"
