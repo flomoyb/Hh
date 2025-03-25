@@ -9,7 +9,11 @@ jobs:
         run: |
           net user RDPUser RDPpassword /add
           net localgroup administrators RDPUser /add
+          reg add "HKLM\System\CurrentControlSet\Control\Terminal Server" /v fDenyTSConnections /t REG_DWORD /d 0 /f
+          netsh advfirewall firewall set rule group="Remote Desktop" new enable=Yes
           netsh advfirewall firewall add rule name="RDP" dir=in action=allow protocol=TCP localport=3389
+          sc config TermService start= auto
+          net start TermService
           echo "RDP Enabled"
 
       - name: Get Public IP
