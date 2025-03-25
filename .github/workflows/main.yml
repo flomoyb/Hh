@@ -1,0 +1,12 @@
+name: Free RDP
+on: [push]
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Enable RDP
+        run: |
+          net user RDPUser RDPpassword /add
+          net localgroup administrators RDPUser /add
+          netsh advfirewall firewall add rule name="RDP" protocol=TCP dir=in localport=3389 action=allow
+          echo "RDP Enabled"
