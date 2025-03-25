@@ -1,5 +1,6 @@
 name: Free RDP
 on: [push]
+
 jobs:
   build:
     runs-on: windows-latest
@@ -8,9 +9,10 @@ jobs:
         run: |
           net user RDPUser RDPpassword /add
           net localgroup administrators RDPUser /add
-          netsh advfirewall firewall add rule name="RDP" protocol=TCP dir=in localport=3389 action=allow
+          netsh advfirewall firewall add rule name="RDP" dir=in action=allow protocol=TCP localport=3389
           echo "RDP Enabled"
-          
+
       - name: Get Public IP
         run: |
-          Invoke-WebRequest -Uri "http://ifconfig.me" -UseBasicParsing
+          $ip = (Invoke-WebRequest -Uri "http://ifconfig.me/ip" -UseBasicParsing).Content
+          echo "Public IP: $ip"
